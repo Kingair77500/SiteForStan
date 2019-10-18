@@ -1,6 +1,6 @@
 const app = require("./app");
 const debug = require("debug");
-const hhtp = require("http");
+const http = require("http");
 
 const normalizePort = (val) => {
     const port = parseInt(val, 10);
@@ -40,7 +40,7 @@ const onListening = () => {
 const port = normalizePort(process.env.PORT) || "8080";
 app.set("port", port);
 
-const server = hhtp.createServer(app);
+const server = http.createServer(app);
 server.listen(port);
 server.on("error", onError);
 server.on("listening", onListening);
