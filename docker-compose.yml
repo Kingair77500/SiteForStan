@@ -1,0 +1,63 @@
+version: "3.1"
+
+services:
+  database:
+    image: mariadb:latest
+    environment:
+      MYSQL_ROOT_PASSWORD: mabite
+      MYSQL_DATABASE: stan
+      MYSQL_USER: asii
+      MYSQL_PASSWORD: mabite
+    ports:
+      - 3306:3306
+    volumes:
+      - ./data:/var/lib/mysql
+    networks:
+      - database
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin:latest
+    ports:
+      - 8090:80
+    networks:
+      - database
+    environment:
+      PMA_HOST: database
+      PMA_USER: root
+      PMA_PASSWORD: mabite
+
+  api:
+    image: node:latest
+    restart: always
+    working_dir: /home/app
+    volumes:
+      - ./Api:/home/app
+      - /var/spool/asterisk:/var/spool/asterisk/
+    command: npm run start
+    environment:
+      DB_HOST: database
+      DB_USER: 'asii'
+      DB_PASSWORD: 'mabite'
+      DB_NAME: 'asii'
+    networks:
+      - database
+      - front
+    ports:
+      - 8080:8080
+
+  front:
+    image: node:alpine
+    environment:
+      API_BREAKPOINT: "https://localhost:8080"
+    working_dir: /home/app
+    volumes:
+      - ./Front/front-site-stan:/home/app
+    command: npm run serve
+    ports:
+      - 80:8080
+    networks:
+      - front
+
+networks:
+  database:
+  front:
